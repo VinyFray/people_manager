@@ -2,11 +2,12 @@ package br.com.zup.people_manager.controllers;
 
 import br.com.zup.people_manager.controllers.dtos.PersonDTO;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,8 +17,18 @@ public class PersonController {
     private static List<PersonDTO> people = new ArrayList<>();
 
     @GetMapping
-    public static List<PersonDTO> getPeople(){
-        return people;
+    public static ResponseEntity getPeople(){
+        return ResponseEntity.ok(people);
+    }
+
+    @GetMapping("/{cpf}")
+    public static ResponseEntity getPersonByCpf(@PathVariable String cpf){
+       try {
+           PersonDTO personDTO = people.stream().filter(person -> person.getCpf().equals(cpf)).findFirst().get();
+           return ResponseEntity.ok(personDTO);
+       }catch (Exception e){
+           return ResponseEntity.status(400).body(Map.of("message", "person not found"));
+       }
     }
 
     @PostMapping
