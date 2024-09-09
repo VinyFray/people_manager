@@ -86,7 +86,4 @@ public class PersonController {
         return ResponseEntity.ok(personOnList);
 
     }
-    // TODO MEtodo para atualizar uma person pelo cpf. PUT ou PATCH para terminar o CRUD
-    // PUT o objeto inteiro deverá ser enviado no json -> não precisa de RequestParam
-    // PATCH apenas os campos que serão atualizado será enviado -> RequestParam necessario para o cpf
 }
