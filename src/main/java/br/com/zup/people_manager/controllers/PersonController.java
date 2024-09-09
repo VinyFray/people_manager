@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -17,12 +18,12 @@ public class PersonController {
     private static List<PersonDTO> people = new ArrayList<>();
 
     @GetMapping
-    public static ResponseEntity getPeople(){
+    public static ResponseEntity<?> getPeople(){
         return ResponseEntity.ok(people);
     }
 
     @GetMapping("/{cpf}")
-    public static ResponseEntity getPersonByCpf(@PathVariable String cpf){
+    public static ResponseEntity<?> getPersonByCpf(@PathVariable String cpf){
        try {
            PersonDTO personDTO = people.stream().filter(person -> person.getCpf().equals(cpf)).findFirst().get();
            return ResponseEntity.ok(personDTO);
@@ -45,6 +46,46 @@ public class PersonController {
                 .collect(Collectors.toList());
     }
 
+    @PutMapping
+    public static ResponseEntity<?> updatePerson(@RequestBody PersonDTO personDTO){
+        Optional<PersonDTO> personDTOOptional = people.stream().filter(person -> person.getCpf()
+                .equals(personDTO.getCpf())).findFirst();
+
+        if(personDTOOptional.isEmpty()){
+            return ResponseEntity.status(400).body((Map.of("message", "person not found")));
+        }
+
+        PersonDTO personOnList = personDTOOptional.get();
+        people.remove(personOnList);
+        people.add(personDTO);
+        return ResponseEntity.ok(personDTO);
+    }
+
+
+    @PatchMapping("/{cpf}")
+    public static ResponseEntity<?> updatePersonPatch(@RequestBody PersonDTO personDTO, @PathVariable String cpf){
+        Optional<PersonDTO> personDTOOptional = people.stream().filter(person -> person.getCpf()
+                .equals(cpf)).findFirst();
+
+        if(personDTOOptional.isEmpty()){
+            return ResponseEntity.status(400).body((Map.of("message", "person not found")));
+        }
+
+        PersonDTO personOnList = personDTOOptional.get();
+
+        if(personDTO.getName() != null){
+            personOnList.setName(personDTO.getName());
+        }
+        if(personDTO.getLastName() != null){
+            personOnList.setLastName(personDTO.getLastName());
+        }
+        if(personDTO.getPhoneNumber() != null){
+            personOnList.setPhoneNumber(personDTO.getPhoneNumber());
+        }
+
+        return ResponseEntity.ok(personOnList);
+
+    }
     // TODO MEtodo para atualizar uma person pelo cpf. PUT ou PATCH para terminar o CRUD
     // PUT o objeto inteiro deverá ser enviado no json -> não precisa de RequestParam
     // PATCH apenas os campos que serão atualizado será enviado -> RequestParam necessario para o cpf
