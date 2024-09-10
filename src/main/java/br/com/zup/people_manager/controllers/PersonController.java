@@ -1,6 +1,7 @@
 package br.com.zup.people_manager.controllers;
 
 import br.com.zup.people_manager.controllers.dtos.PersonDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class PersonController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public static void savePerson(@RequestBody PersonDTO person){
+    public static void savePerson(@RequestBody @Valid PersonDTO person){
         people.add(person);
     }
 
